@@ -1,0 +1,6 @@
+@Room.Service_HostAddress = http://localhost:5033
+
+GET {{Room.Service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
