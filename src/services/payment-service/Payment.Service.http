@@ -1,6 +1,39 @@
-@Payment.Service_HostAddress = http://localhost:5024
+### Process a payment
+POST https://localhost:7003/api/payments/process
+Content-Type: application/json
 
-GET {{Payment.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+{
+  "bookingId": "{{bookingId}}",
+  "userId": "{{userId}}",
+  "amount": 899.97,
+  "paymentMethod": "CreditCard",
+  "cardNumber": "4111111111111111",
+  "cardholderName": "John Doe",
+  "cardExpiryMonth": "12",
+  "cardExpiryYear": "2025",
+  "cvv": "123"
+}
 
-###
+### Test payment failure (card ending with 0000)
+POST https://localhost:7003/api/payments/process
+Content-Type: application/json
+
+{
+  "bookingId": "{{bookingId}}",
+  "userId": "{{userId}}",
+  "amount": 899.97,
+  "paymentMethod": "CreditCard",
+  "cardNumber": "4111111111110000",
+  "cardholderName": "John Doe",
+  "cardExpiryMonth": "12",
+  "cardExpiryYear": "2025",
+  "cvv": "123"
+}
+
+### Get a specific payment
+GET https://localhost:7003/api/payments/{{paymentId}}
+
+### Variables for testing
+# @bookingId = 123e4567-e89b-12d3-a456-426614174003
+# @userId = 123e4567-e89b-12d3-a456-426614174000
+# @paymentId = 456e7890-e89b-12d3-a456-426614174004

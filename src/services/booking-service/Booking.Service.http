@@ -1,6 +1,22 @@
-@Booking.Service_HostAddress = http://localhost:5016
+### Create a new booking
+POST https://localhost:7002/api/bookings
+Content-Type: application/json
 
-GET {{Booking.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+{
+  "userId": "{{userId}}",
+  "hotelId": "{{hotelId}}",
+  "roomId": "{{roomId}}",
+  "checkInDate": "2024-06-15T14:00:00Z",
+  "checkOutDate": "2024-06-18T11:00:00Z",
+  "numberOfGuests": 2,
+  "specialRequests": "Early check-in if possible"
+}
 
-###
+### Get a specific booking
+GET https://localhost:7002/api/bookings/{{bookingId}}
+
+### Variables for testing
+# @userId = 123e4567-e89b-12d3-a456-426614174000
+# @hotelId = 456e7890-e89b-12d3-a456-426614174001
+# @roomId = 789e0123-e89b-12d3-a456-426614174002
+# @bookingId = 123e4567-e89b-12d3-a456-426614174003
