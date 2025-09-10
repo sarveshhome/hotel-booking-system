@@ -1,6 +1,79 @@
-@Pricing.Service_HostAddress = http://localhost:5046
+### Create a pricing rule
+POST https://localhost:7004/api/pricing/rules
+Content-Type: application/json
 
-GET {{Pricing.Service_HostAddress}}/weatherforecast/
-Accept: application/json
+{
+  "hotelId": "{{hotelId}}",
+  "roomTypeId": "{{roomTypeId}}",
+  "ruleType": "Seasonal",
+  "name": "Peak Season Pricing",
+  "description": "Higher prices during peak tourist season",
+  "startDate": "2024-06-01T00:00:00Z",
+  "endDate": "2024-08-31T23:59:59Z",
+  "basePriceModifier": 1.25,
+  "fixedPriceAdjustment": 0,
+  "minimumPrice": 150.00,
+  "maximumPrice": 0,
+  "priority": 1
+}
 
-###
+### Create a demand-based pricing rule
+POST https://localhost:7004/api/pricing/rules
+Content-Type: application/json
+
+{
+  "hotelId": "{{hotelId}}",
+  "roomTypeId": "{{roomTypeId}}",
+  "ruleType": "Demand",
+  "name": "High Occupancy Pricing",
+  "description": "Price increase when hotel occupancy is high",
+  "basePriceModifier": 1.15,
+  "fixedPriceAdjustment": 0,
+  "occupancyThreshold": 0.8,
+  "priority": 2
+}
+
+### Create a special event pricing rule
+POST https://localhost:7004/api/pricing/rules
+Content-Type: application/json
+
+{
+  "hotelId": "{{hotelId}}",
+  "roomTypeId": "{{roomTypeId}}",
+  "ruleType": "Special",
+  "name": "Christmas Pricing",
+  "description": "Special pricing for Christmas period",
+  "startDate": "2024-12-20T00:00:00Z",
+  "endDate": "2024-12-26T23:59:59Z",
+  "basePriceModifier": 1.5,
+  "fixedPriceAdjustment": 50.00,
+  "specialEvent": "Christmas",
+  "priority": 3
+}
+
+### Calculate price
+POST https://localhost:7004/api/pricing/calculate
+Content-Type: application/json
+
+{
+  "hotelId": "{{hotelId}}",
+  "roomTypeId": "{{roomTypeId}}",
+  "checkInDate": "2024-06-15T14:00:00Z",
+  "checkOutDate": "2024-06-18T11:00:00Z",
+  "numberOfGuests": 2,
+  "numberOfRooms": 1,
+  "specialEvent": "Summer",
+  "weatherCondition": "Sunny",
+  "currentOccupancyRate": 0.85
+}
+
+### Get a specific pricing rule
+GET https://localhost:7004/api/pricing/rules/{{pricingRuleId}}
+
+### Get hotel pricing for a specific date
+GET https://localhost:7004/api/pricing/hotels/{{hotelId}}/pricing?date=2024-06-15
+
+### Variables for testing
+# @hotelId = 456e7890-e89b-12d3-a456-426614174001
+# @roomTypeId = 789e0123-e89b-12d3-a456-426614174002
+# @pricingRuleId = 123e4567-e89b-12d3-a456-426614174005
