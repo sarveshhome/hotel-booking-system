@@ -5,6 +5,133 @@ create microservices architecture for a hotel booking system with .net core and 
 🧪 Integration & Unit Testing
 🎯 React Frontend with Vite
 
+```
+hotel-booking-system/
+├── src/
+│   ├── api-gateway/                     # API Gateway Service
+│   │   ├── ApiGateway.csproj
+│   │   ├── Program.cs
+│   │   ├── Dockerfile
+│   │   └── ocelot.json
+│   │
+│   ├── Kafka/                          # Kafka Infrastructure
+│   │   ├── Publishers/
+│   │   │   ├── Kafka.Publishers.csproj
+│   │   │   ├── Configuration/
+│   │   │   │   └── KafkaSettings.cs
+│   │   │   ├── Interfaces/
+│   │   │   │   └── IKafkaProducer.cs
+│   │   │   ├── Extensions/
+│   │   │   │   └── ServiceCollectionExtensions.cs
+│   │   │   └── KafkaProducer.cs
+│   │   │
+│   │   └── ConsumerHost/
+│   │       ├── Kafka.ConsumerHost.csproj
+│   │       ├── Configuration/
+│   │       │   └── KafkaConsumerSettings.cs
+│   │       ├── Interfaces/
+│   │       │   └── IMessageHandler.cs
+│   │       ├── Extensions/
+│   │       │   └── ServiceCollectionExtensions.cs
+│   │       └── KafkaConsumerService.cs
+│   │
+│   ├── services/                       # Microservices
+│   │   ├── user-service/              # User Management Service
+│   │   │   ├── UserService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Data/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   ├── hotel-service/             # Hotel Management Service
+│   │   │   ├── HotelService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Data/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   ├── room-service/              # Room Management Service
+│   │   │   ├── RoomService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Data/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   ├── booking-service/           # Booking Management Service
+│   │   │   ├── BookingService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Data/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   ├── payment-service/           # Payment Processing Service
+│   │   │   ├── PaymentService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Data/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   ├── notification-service/      # Notification Service
+│   │   │   ├── NotificationService.csproj
+│   │   │   ├── Controllers/
+│   │   │   ├── Models/
+│   │   │   ├── Services/
+│   │   │   ├── Handlers/
+│   │   │   └── Dockerfile
+│   │   │
+│   │   └── rate-service/             # Rate Management Service
+│   │       ├── RateService.csproj
+│   │       ├── Controllers/
+│   │       ├── Models/
+│   │       ├── Services/
+│   │       ├── Data/
+│   │       └── Dockerfile
+│   │
+│   ├── shared/                       # Shared Libraries
+│   │   ├── Shared.csproj
+│   │   ├── Constants/
+│   │   ├── Models/
+│   │   ├── Interfaces/
+│   │   └── Extensions/
+│   │
+│   └── frontend/                     # React Frontend
+│       ├── package.json
+│       ├── vite.config.js
+│       ├── src/
+│       ├── public/
+│       └── Dockerfile
+│
+├── tests/                           # Test Projects
+│   ├── unit-tests/
+│   │   └── Services.Tests/
+│   └── integration-tests/
+│       └── Api.IntegrationTests/
+│
+├── infra/                          # Infrastructure
+│   ├── kafka/
+│   │   └── config/
+│   ├── database/
+│   │   └── migrations/
+│   └── kubernetes/
+│       ├── deployments/
+│       └── services/
+│
+├── scripts/                        # Scripts
+│   ├── build.sh
+│   ├── deploy.sh
+│   └── setup-local.sh
+│
+├── docker-compose.yml              # Docker Compose file
+├── docker-compose.override.yml     # Docker Compose Override
+├── .gitignore
+├── README.md
+└── HotelBookingSystem.sln         # Solution File
+```
 
 ```
 hotel-booking-system/
