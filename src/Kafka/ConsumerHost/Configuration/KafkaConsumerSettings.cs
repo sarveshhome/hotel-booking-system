@@ -1,3 +1,5 @@
+using Confluent.Kafka;
+
 namespace Kafka.ConsumerHost.Configuration
 {
     public class KafkaConsumerSettings

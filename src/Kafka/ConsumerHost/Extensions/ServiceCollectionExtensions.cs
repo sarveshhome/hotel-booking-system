@@ -1,4 +1,8 @@
 // src/Kafka/ConsumerHost/Extensions/ServiceCollectionExtensions.cs
+
+using Kafka.ConsumerHost.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Kafka.ConsumerHost.Extensions
 {
     public static class ServiceCollectionExtensions
