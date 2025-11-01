@@ -22,11 +22,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register interfaces
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-builder.services.AddKafkaProducer(options =>
-{
-    options.BootstrapServers = configuration["Kafka:BootstrapServers"];
-    options.ClientId = "payment-service";
-});
 
 // Add EventBus (placeholder implementation)
 builder.Services.AddScoped<IEventBus, EventBus>();
