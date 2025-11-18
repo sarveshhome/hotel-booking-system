@@ -29,6 +29,18 @@ builder.Services.AddScoped<IPricingEngine, PricingEngine>();
 // Add EventBus (placeholder implementation)
 builder.Services.AddScoped<IEventBus, EventBus>();
 
+// Configure Amadeus API
+var amadeusSettings = new AmadeusSettings();
+builder.Configuration.GetSection("Amadeus").Bind(amadeusSettings);
+builder.Services.AddSingleton(amadeusSettings);
+
+// Add HttpClient for Amadeus API
+builder.Services.AddHttpClient<IAmadeusApiService, AmadeusApiService>(client =>
+{
+    client.BaseAddress = new Uri(amadeusSettings.BaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,29 @@
+### Get Amadeus Access Token
+POST https://localhost:7004/api/amadeus/token
+Content-Type: application/json
+
+###
+
+### Search Hotels via Amadeus API
+GET https://localhost:7004/api/amadeus/hotels?cityCode=NYC&checkIn=2024-06-15&checkOut=2024-06-18
+Content-Type: application/json
+
+###
+
+### Search Flights via Amadeus API
+GET https://localhost:7004/api/amadeus/flights?origin=SYD&destination=BKK&departureDate=2025-12-02&returnDate=2025-12-16&adults=2&max=5
+Content-Type: application/json
+
+###
+
+### Search Hotels by City Code
+GET https://localhost:7004/api/amadeus/hotels/city/DEL
+Content-Type: application/json
+
+###
+
+### Direct Amadeus API Test (for reference)
+POST https://test.api.amadeus.com/v1/security/oauth2/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=GaT20f4dxvDgJ5C5UtUxRP6A2vGAhNfh&client_secret=pUXKAC7fiMHKkSyy&grant_type=client_credentials
