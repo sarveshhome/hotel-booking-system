@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Hotel Service",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "src/services/hotel-service/Hotel.Service.csproj",
+                "--urls",
+                "http://localhost:7001"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Run API Gateway",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "src/api-gateway/API.Gateway.csproj",
+                "--urls",
+                "http://localhost:5022"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Run All Services",
+            "dependsOrder": "parallel",
+            "dependsOn": [
+                "Run Hotel Service",
+                "Run API Gateway"
+            ],
+            "group": "build"
+        }
+    ]
+}

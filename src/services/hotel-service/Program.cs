@@ -1,53 +1,79 @@
-using Microsoft.EntityFrameworkCore;
-using Hotel.Service.Application.Common.Interfaces;
+using Hotel.Service.Infrastructure.Services;
 using Hotel.Service.Infrastructure.Persistence;
-using Hotel.Service.Application.Features.Hotels.Commands.CreateHotel;
-using Hotel.Service.Application.Features.Hotels.Queries.GetHotels;
+using Hotel.Service.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
 
 // Add MediatR
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(CreateHotelCommand).Assembly);
-    cfg.RegisterServicesFromAssembly(typeof(GetHotelsQuery).Assembly);
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+// Add Entity Framework (with fallback for development)
+try
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    
+    // Register application interfaces
+    builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+}
+catch
+{
+    // For development without SQL Server
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseInMemoryDatabase("HotelServiceDb"));
+    
+    builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+}
+
+builder.Services.AddScoped<IEventBus, EventBusService>();
+
+// Add Swagger/OpenAPI
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { 
+        Title = "Hotel Service API", 
+        Version = "v1",
+        Description = "Microservice for hotel search and booking"
+    });
 });
 
-// Add DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Configure Amadeus API
+var amadeusSettings = new AmadeusSettings();
+builder.Configuration.GetSection("Amadeus").Bind(amadeusSettings);
+builder.Services.AddSingleton(amadeusSettings);
 
-// Register interfaces
-builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
-// Add EventBus (placeholder implementation)
-builder.Services.AddScoped<IEventBus, EventBus>();
+// Add HttpClient for Amadeus API
+builder.Services.AddHttpClient<IAmadeusApiService, AmadeusApiService>(client =>
+{
+    client.BaseAddress = new Uri(amadeusSettings.BaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel Service API v1");
+        c.RoutePrefix = "swagger";
+    });
 }
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+Console.WriteLine($"Hotel Service is running on: {builder.Configuration["Urls"]}");
+Console.WriteLine("Swagger UI available at: https://localhost:7001/swagger");
 
-// Placeholder EventBus implementation
-public class EventBus : IEventBus
-{
-    public Task PublishAsync<T>(T @event, CancellationToken cancellationToken = default) where T : class
-    {
-        // TODO: Implement actual event publishing (e.g., to Kafka, RabbitMQ, etc.)
-        Console.WriteLine($"Event published: {@event}");
-        return Task.CompletedTask;
-    }
-}
+app.Run();
