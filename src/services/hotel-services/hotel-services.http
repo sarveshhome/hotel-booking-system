@@ -4,3 +4,17 @@ GET {{hotel_services_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+### Search Hotels by City Code in Hotel Service
+GET {{hotel_services_HostAddress}}/api/amadeus/hotels/city/DEL
+Content-Type: application/json
+
+###
+
+### Search Hotels by City Code - Mumbai
+GET {{hotel_services_HostAddress}}/api/amadeus/hotels/city/BOM
+Content-Type: application/json
+
+###
+
+### Search Hotels by City Code - New York
+GET {{hotel_services_HostAddress}}/api/amadeus/hotels/city/NYC

@@ -22,6 +22,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IEventBus, NoOpEventBus>();
 
+// Register Amadeus API Service
+builder.Services.AddHttpClient<IAmadeusApiService, AmadeusApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://test.api.amadeus.com");
+});
+
+// Register Amadeus settings
+builder.Services.AddSingleton(new AmadeusSettings
+{
+    BaseUrl = "https://test.api.amadeus.com",
+    ClientId = builder.Configuration["Amadeus:ClientId"] ?? "demo-client-id",
+    ClientSecret = builder.Configuration["Amadeus:ClientSecret"] ?? "demo-client-secret"
+});
+
 var app = builder.Build();
 
 // Configure minimal pipeline
