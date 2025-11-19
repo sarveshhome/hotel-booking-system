@@ -1,0 +1,21 @@
+### Test Amadeus Token Acquisition
+GET http://localhost:5068/api/amadeus/token/test
+Accept: application/json
+
+###
+
+### Test Hotel Search by City (will use token internally)
+GET http://localhost:5068/api/amadeus/hotels/city/NYC
+Accept: application/json
+
+###
+
+### Test Hotel Search by City (different city)
+GET http://localhost:5068/api/amadeus/hotels/city/LON
+Accept: application/json
+
+###
+
+### Health Check
+GET http://localhost:5068/health
+Accept: application/json

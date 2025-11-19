@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 namespace Hotel.Service.Infrastructure.Services;
 
@@ -28,6 +30,9 @@ public class AmadeusApiService : IAmadeusApiService
 
         try
         {
+            // Clear any existing authorization header for token request
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            
             var content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("client_id", _settings.ClientId),
@@ -35,25 +40,35 @@ public class AmadeusApiService : IAmadeusApiService
                 new KeyValuePair<string, string>("grant_type", "client_credentials")
             });
 
-            var response = await _httpClient.PostAsync("/v1/security/oauth2/token", content);
+            // Use absolute URL for token endpoint
+            var tokenUrl = $"{_settings.BaseUrl}/v1/security/oauth2/token";
+            var response = await _httpClient.PostAsync(tokenUrl, content);
             
             if (!response.IsSuccessStatusCode)
             {
-                // Return a mock token for development
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Token request failed: {response.StatusCode} - {errorContent}");
                 return "mock-token-for-development";
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var tokenResponse = JsonSerializer.Deserialize<AmadeusTokenResponse>(json);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var tokenResponse = JsonSerializer.Deserialize<AmadeusTokenResponse>(json, options);
 
             _cachedToken = tokenResponse?.AccessToken ?? string.Empty;
             _tokenExpiry = DateTime.UtcNow.AddSeconds((tokenResponse?.ExpiresIn ?? 3600) - 60);
 
+            Console.WriteLine($"Token obtained successfully, expires at: {_tokenExpiry}");
             return _cachedToken;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Return a mock token when API is not available
+            Console.WriteLine($"Error getting access token: {ex.Message}");
             return "mock-token-for-development";
         }
     }
@@ -63,23 +78,33 @@ public class AmadeusApiService : IAmadeusApiService
         try
         {
             var token = await GetAccessTokenAsync();
-            _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", token);
+            
+            // Set authorization header for API requests
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var url = $"/v1/reference-data/locations/hotels/by-city?cityCode={cityCode}";
+            // Use absolute URL for API endpoint
+            var url = $"{_settings.BaseUrl}/v1/reference-data/locations/hotels/by-city?cityCode={cityCode}";
             var response = await _httpClient.GetAsync(url);
             
             if (!response.IsSuccessStatusCode)
             {
-                // Return mock data for development when API fails
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Hotel search failed: {response.StatusCode} - {errorContent}");
                 return GetMockHotelData(cityCode);
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<AmadeusHotelCityResponse>(json) ?? new AmadeusHotelCityResponse();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            return JsonSerializer.Deserialize<AmadeusHotelCityResponse>(json, options) ?? new AmadeusHotelCityResponse();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Return mock data when API is not available or credentials are invalid
+            Console.WriteLine($"Error searching hotels: {ex.Message}");
             return GetMockHotelData(cityCode);
         }
     }
@@ -138,8 +163,14 @@ public class AmadeusSettings
 
 public class AmadeusTokenResponse
 {
+    [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = string.Empty;
+    
+    [JsonPropertyName("expires_in")]
     public int ExpiresIn { get; set; }
+    
+    [JsonPropertyName("token_type")]
+    public string TokenType { get; set; } = string.Empty;
 }
 
 public class AmadeusHotelCityResponse

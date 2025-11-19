@@ -20,4 +20,27 @@ public class AmadeusController : ControllerBase
         var hotels = await _amadeusService.SearchHotelsByCityAsync(cityCode);
         return Ok(hotels);
     }
+
+    [HttpGet("token/test")]
+    public async Task<IActionResult> TestToken()
+    {
+        try
+        {
+            var token = await _amadeusService.GetAccessTokenAsync();
+            return Ok(new { 
+                success = true, 
+                tokenLength = token.Length,
+                tokenPreview = token.Length > 10 ? token.Substring(0, 10) + "..." : token,
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { 
+                success = false, 
+                error = ex.Message,
+                timestamp = DateTime.UtcNow
+            });
+        }
+    }
 }
