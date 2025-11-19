@@ -22,6 +22,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IEventBus, NoOpEventBus>();
 
+// Register Amadeus settings from configuration
+var amadeusSettings = new AmadeusSettings();
+builder.Configuration.GetSection("Amadeus").Bind(amadeusSettings);
+builder.Services.AddSingleton(amadeusSettings);
+
+// Register Amadeus API Service with HttpClient
+builder.Services.AddHttpClient<IAmadeusApiService, AmadeusApiService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "HotelBookingSystem/1.0");
+});
+
 var app = builder.Build();
 
 // Configure minimal pipeline
