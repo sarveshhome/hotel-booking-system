@@ -10,16 +10,16 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
     }
 
-    public DbSet<Domain.Entities.Hotel> Hotels => Set<Domain.Entities.Hotel>();
-    public DbSet<Domain.Entities.Room> Rooms => Set<Domain.Entities.Room>();
-    public DbSet<Domain.Entities.HotelAmenity> HotelAmenities => Set<Domain.Entities.HotelAmenity>();
+    public DbSet<Hotel.Service.Domain.Entities.Hotel> Hotels => Set<Hotel.Service.Domain.Entities.Hotel>();
+    public DbSet<Hotel.Service.Domain.Entities.Room> Rooms => Set<Hotel.Service.Domain.Entities.Room>();
+    public DbSet<Hotel.Service.Domain.Entities.HotelAmenity> HotelAmenities => Set<Hotel.Service.Domain.Entities.HotelAmenity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         // Configure Hotel entity
-        modelBuilder.Entity<Domain.Entities.Hotel>(entity =>
+        modelBuilder.Entity<Hotel.Service.Domain.Entities.Hotel>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
@@ -31,7 +31,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         });
 
         // Configure Room entity
-        modelBuilder.Entity<Domain.Entities.Room>(entity =>
+        modelBuilder.Entity<Hotel.Service.Domain.Entities.Room>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.RoomNumber).IsRequired().HasMaxLength(20);
@@ -45,7 +45,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         });
 
         // Configure HotelAmenity entity
-        modelBuilder.Entity<Domain.Entities.HotelAmenity>(entity =>
+        modelBuilder.Entity<Hotel.Service.Domain.Entities.HotelAmenity>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);

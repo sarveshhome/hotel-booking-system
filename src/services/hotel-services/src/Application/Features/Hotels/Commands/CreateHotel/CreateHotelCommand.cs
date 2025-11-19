@@ -36,7 +36,7 @@ public class CreateHotelCommandHandler : IRequestHandler<CreateHotelCommand, Gui
 
     public async Task<Guid> Handle(CreateHotelCommand request, CancellationToken cancellationToken)
     {
-        var hotel = new Domain.Entities.Hotel
+        var hotel = new Hotel.Service.Domain.Entities.Hotel
         {
             Name = request.Name,
             Description = request.Description,
